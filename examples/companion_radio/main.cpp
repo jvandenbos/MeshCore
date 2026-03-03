@@ -71,7 +71,14 @@ static uint32_t _atoi(const char* sp) {
     ArduinoSerialInterface serial_interface;
   #endif
 #elif defined(NRF52_PLATFORM)
-  #ifdef BLE_PIN_CODE
+  #if defined(BLE_AND_USB) && defined(BLE_PIN_CODE)
+    #include <helpers/nrf52/SerialBLEInterface.h>
+    #include <helpers/ArduinoSerialInterface.h>
+    #include <helpers/DualSerialInterface.h>
+    SerialBLEInterface ble_interface;
+    ArduinoSerialInterface usb_interface;
+    DualSerialInterface serial_interface(ble_interface, usb_interface);
+  #elif defined(BLE_PIN_CODE)
     #include <helpers/nrf52/SerialBLEInterface.h>
     SerialBLEInterface serial_interface;
   #else
@@ -150,12 +157,17 @@ void setup() {
     #endif
   );
 
-#ifdef BLE_PIN_CODE
+#if defined(BLE_AND_USB) && defined(BLE_PIN_CODE)
+  ble_interface.begin(BLE_NAME_PREFIX, the_mesh.getNodePrefs()->node_name, the_mesh.getBLEPin());
+  usb_interface.begin(Serial);
+  the_mesh.startInterface(serial_interface);  // dual wrapper
+#elif defined(BLE_PIN_CODE)
   serial_interface.begin(BLE_NAME_PREFIX, the_mesh.getNodePrefs()->node_name, the_mesh.getBLEPin());
+  the_mesh.startInterface(serial_interface);
 #else
   serial_interface.begin(Serial);
-#endif
   the_mesh.startInterface(serial_interface);
+#endif
 #elif defined(RP2040_PLATFORM)
   LittleFS.begin();
   store.begin();
