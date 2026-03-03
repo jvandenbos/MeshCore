@@ -147,7 +147,7 @@ DispatcherAction Mesh::onRecvPacket(Packet* pkt) {
             getPeerSharedSecret(secret, j);
 
             // decrypt, checking MAC is valid
-            uint8_t data[MAX_PACKET_PAYLOAD];
+            uint8_t data[MAX_PACKET_PAYLOAD + 1];  // +1 for null terminator in onPeerDataRecv
             int len = Utils::MACThenDecrypt(secret, data, macAndData, pkt->payload_len - i);
             if (len > 0) {  // success!
               if (pkt->getPayloadType() == PAYLOAD_TYPE_PATH) {
@@ -199,7 +199,7 @@ DispatcherAction Mesh::onRecvPacket(Packet* pkt) {
           self_id.calcSharedSecret(secret, sender);
 
           // decrypt, checking MAC is valid
-          uint8_t data[MAX_PACKET_PAYLOAD];
+          uint8_t data[MAX_PACKET_PAYLOAD + 1];  // +1 for null terminator in onAnonDataRecv
           int len = Utils::MACThenDecrypt(secret, data, macAndData, pkt->payload_len - i);
           if (len > 0) {  // success!
             onAnonDataRecv(pkt, secret, sender, data, len);
@@ -225,7 +225,7 @@ DispatcherAction Mesh::onRecvPacket(Packet* pkt) {
         // for each matching channel, try to decrypt data
         for (int j = 0; j < num; j++) {
           // decrypt, checking MAC is valid
-          uint8_t data[MAX_PACKET_PAYLOAD];
+          uint8_t data[MAX_PACKET_PAYLOAD + 1];  // +1 for null terminator in onGroupDataRecv
           int len = Utils::MACThenDecrypt(channels[j].secret, data, macAndData, pkt->payload_len - i);
           if (len > 0) {  // success!
             onGroupDataRecv(pkt, pkt->getPayloadType(), channels[j], data, len);
