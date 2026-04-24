@@ -812,7 +812,14 @@ void UITask::loop() {
       _display->endFrame();
     }
 #if AUTO_OFF_MILLIS > 0
-    if (millis() > _auto_off) {
+    // Skip auto-off when USB powered (display stays on)
+    bool usb_powered = false;
+    #if defined(NRF52_PLATFORM)
+      usb_powered = (NRF_POWER->USBREGSTATUS & POWER_USBREGSTATUS_VBUSDETECT_Msk);
+    #elif defined(ESP32)
+      // ESP32-S3 USB detection would go here if needed
+    #endif
+    if (!usb_powered && millis() > _auto_off) {
       _display->turnOff();
     }
 #endif

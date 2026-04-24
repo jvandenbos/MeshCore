@@ -41,13 +41,6 @@ static uint32_t _atoi(const char* sp) {
     #ifndef TCP_PORT
       #define TCP_PORT 5000
     #endif
-  #elif defined(BLE_AND_USB) && defined(BLE_PIN_CODE)
-    #include <helpers/esp32/SerialBLEInterface.h>
-    #include <helpers/ArduinoSerialInterface.h>
-    #include <helpers/DualSerialInterface.h>
-    SerialBLEInterface ble_interface;
-    ArduinoSerialInterface usb_interface;
-    DualSerialInterface serial_interface(ble_interface, usb_interface);
   #elif defined(BLE_PIN_CODE)
     #include <helpers/esp32/SerialBLEInterface.h>
     SerialBLEInterface serial_interface;
@@ -78,7 +71,8 @@ static uint32_t _atoi(const char* sp) {
     ArduinoSerialInterface serial_interface;
   #endif
 #elif defined(NRF52_PLATFORM)
-  #if defined(BLE_AND_USB) && defined(BLE_PIN_CODE)
+  #if defined(DUAL_SERIAL) && defined(BLE_PIN_CODE)
+    // Unified USB+BLE build: both interfaces active simultaneously
     #include <helpers/nrf52/SerialBLEInterface.h>
     #include <helpers/ArduinoSerialInterface.h>
     #include <helpers/DualSerialInterface.h>
@@ -164,17 +158,16 @@ void setup() {
     #endif
   );
 
-#if defined(BLE_AND_USB) && defined(BLE_PIN_CODE)
+#if defined(DUAL_SERIAL)
+  // Initialize both interfaces for unified USB+BLE
   ble_interface.begin(BLE_NAME_PREFIX, the_mesh.getNodePrefs()->node_name, the_mesh.getBLEPin());
   usb_interface.begin(Serial);
-  the_mesh.startInterface(serial_interface);  // dual wrapper
 #elif defined(BLE_PIN_CODE)
   serial_interface.begin(BLE_NAME_PREFIX, the_mesh.getNodePrefs()->node_name, the_mesh.getBLEPin());
-  the_mesh.startInterface(serial_interface);
 #else
   serial_interface.begin(Serial);
-  the_mesh.startInterface(serial_interface);
 #endif
+  the_mesh.startInterface(serial_interface);
 #elif defined(RP2040_PLATFORM)
   LittleFS.begin();
   store.begin();
@@ -216,10 +209,6 @@ void setup() {
   board.setInhibitSleep(true);   // prevent sleep when WiFi is active
   WiFi.begin(WIFI_SSID, WIFI_PWD);
   serial_interface.begin(TCP_PORT);
-#elif defined(BLE_AND_USB) && defined(BLE_PIN_CODE)
-  usb_interface.begin(Serial);
-  delay(100);
-  ble_interface.begin(BLE_NAME_PREFIX, the_mesh.getNodePrefs()->node_name, the_mesh.getBLEPin());
 #elif defined(BLE_PIN_CODE)
   serial_interface.begin(BLE_NAME_PREFIX, the_mesh.getNodePrefs()->node_name, the_mesh.getBLEPin());
 #elif defined(SERIAL_RX)
