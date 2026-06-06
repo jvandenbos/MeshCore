@@ -87,60 +87,6 @@ void MyMesh::putNeighbour(const mesh::Identity &id, uint32_t timestamp, float sn
 #endif
 }
 
-#if MAX_SIGHTINGS
-void MyMesh::putSighting(const mesh::Identity& id, float snr, float rssi, const char* name, uint8_t node_type) {
-  // find existing sighting by pubkey prefix, else use least recently seen
-  uint32_t oldest_time = 0xFFFFFFFF;
-  NodeSighting* slot = &sightings[0];
-  for (int i = 0; i < MAX_SIGHTINGS; i++) {
-    if (memcmp(id.pub_key, sightings[i].pubkey_prefix, 6) == 0) {
-      slot = &sightings[i];
-      goto update;
-    }
-    if (sightings[i].last_seen < oldest_time) {
-      slot = &sightings[i];
-      oldest_time = sightings[i].last_seen;
-    }
-  }
-  // new entry — reset packet count
-  slot->packet_count = 0;
-
-update:
-  memcpy(slot->pubkey_prefix, id.pub_key, 6);
-  slot->last_snr = (int8_t)(snr * 4);
-  slot->last_rssi = (int16_t)rssi;
-  slot->last_seen = getRTCClock()->getCurrentTime();
-  slot->packet_count++;
-  slot->node_type = node_type;
-  if (name && name[0]) {
-    strncpy(slot->name, name, sizeof(slot->name) - 1);
-    slot->name[sizeof(slot->name) - 1] = '\0';
-  } else if (slot->name[0] == '\0') {
-    // no name yet — use hex prefix
-    mesh::Utils::toHex(slot->name, id.pub_key, 4);
-    slot->name[8] = '\0';
-  }
-}
-
-int MyMesh::getSightingsCount() const {
-  int count = 0;
-  for (int i = 0; i < MAX_SIGHTINGS; i++) {
-    if (sightings[i].last_seen > 0) count++;
-  }
-  return count;
-}
-#endif
-
-#if MAX_NEIGHBOURS
-int MyMesh::getNeighboursCount() const {
-  int count = 0;
-  for (int i = 0; i < MAX_NEIGHBOURS; i++) {
-    if (neighbours[i].heard_timestamp > 0) count++;
-  }
-  return count;
-}
-#endif
-
 uint8_t MyMesh::handleLoginReq(const mesh::Identity& sender, const uint8_t* secret, uint32_t sender_timestamp, const uint8_t* data, bool is_flood) {
   ClientInfo* client = NULL;
   if (data[0] == 0) {   // blank password, just check if sender is in ACL
@@ -675,21 +621,13 @@ void MyMesh::onAdvertRecv(mesh::Packet *packet, const mesh::Identity &id, uint32
                           const uint8_t *app_data, size_t app_data_len) {
   mesh::Mesh::onAdvertRecv(packet, id, timestamp, app_data, app_data_len); // chain to super impl
 
-  AdvertDataParser parser(app_data, app_data_len);
-
   // if this a zero hop advert (and not via 'Share'), add it to neighbours
   if (packet->path_len == 0 && !isShare(packet)) {
+    AdvertDataParser parser(app_data, app_data_len);
     if (parser.isValid() && parser.getType() == ADV_TYPE_REPEATER) { // just keep neigbouring Repeaters
       putNeighbour(id, timestamp, packet->getSNR());
     }
   }
-
-#if MAX_SIGHTINGS
-  // track all nodes we hear adverts from (any hop count)
-  if (parser.isValid()) {
-    putSighting(id, packet->getSNR(), _radio->getLastRSSI(), parser.getName(), parser.getType());
-  }
-#endif
 }
 
 void MyMesh::onPeerDataRecv(mesh::Packet *packet, uint8_t type, int sender_idx, const uint8_t *secret,

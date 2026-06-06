@@ -68,20 +68,6 @@ struct NeighbourInfo {
   int8_t snr; // multiplied by 4, user should divide to get float value
 };
 
-#ifndef MAX_SIGHTINGS
-  #define MAX_SIGHTINGS  50
-#endif
-
-struct NodeSighting {
-  uint8_t pubkey_prefix[6];
-  char name[20];
-  int16_t last_rssi;
-  int8_t last_snr;       // multiplied by 4
-  uint32_t last_seen;    // epoch timestamp
-  uint32_t packet_count;
-  uint8_t node_type;     // ADV_TYPE_* from AdvertDataHelpers
-};
-
 #ifndef FIRMWARE_BUILD_DATE
   #define FIRMWARE_BUILD_DATE   "20 Mar 2026"
 #endif
@@ -118,10 +104,6 @@ class MyMesh : public mesh::Mesh, public CommonCLICallbacks {
   unsigned long dirty_contacts_expiry;
 #if MAX_NEIGHBOURS
   NeighbourInfo neighbours[MAX_NEIGHBOURS];
-#endif
-#if MAX_SIGHTINGS
-  NodeSighting sightings[MAX_SIGHTINGS];
-  void putSighting(const mesh::Identity& id, float snr, float rssi, const char* name, uint8_t node_type);
 #endif
   CayenneLPP telemetry;
   unsigned long set_radio_at, revert_radio_at;
@@ -254,21 +236,6 @@ public:
     bridge.begin();
   }
 #endif
-
-#if MAX_SIGHTINGS
-  const NodeSighting* getSightings() const { return sightings; }
-  int getSightingsCount() const;
-#endif
-#if MAX_NEIGHBOURS
-  const NeighbourInfo* getNeighbours() const { return neighbours; }
-  int getNeighboursCount() const;
-#endif
-
-  // Access radio/board for display stats
-  mesh::Radio* getRadio() { return _radio; }
-  mesh::MainBoard& getBoard() { return board; }
-  mesh::PacketManager* getPacketManager() { return _mgr; }
-  uint32_t getUptimeSeconds() const { return _ms->getMillis() / 1000; }
 
   // To check if there is pending work
   bool hasPendingWork() const;
