@@ -1,0 +1,12 @@
+# Touch is an alias of the same grammar, never a second one.
+key 2
+touch 160,110
+snap 90_touch_selects_row
+touch 160,110
+expect node_card
+snap 91_touch_opens_card
+swipe r
+expect nodes
+touch 250,233
+expect settings
+snap 92_touch_tab_bar

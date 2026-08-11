@@ -1,0 +1,13 @@
+# The tab ring, jumped to by number key (grammar rule 3).
+key 0
+expect home
+snap 10_tab_home
+key 1
+expect chats
+snap 11_tab_chats
+key 2
+expect nodes
+snap 12_tab_nodes
+key 3
+expect settings
+snap 13_tab_settings

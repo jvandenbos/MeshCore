@@ -1,0 +1,22 @@
+# The BlackBerry rule: inside a conversation, just start typing. The composer
+# grows a line at a time to three, the tab bar stands down, and the status bar
+# keeps burning.
+key 1
+nav click
+expect thread
+text hello from the T-Deck
+snap 100_compose_one_line
+key space
+text OSPREY on the roof peak, GYRFALCON on Tzouhalem
+snap 101_compose_two_lines
+key space
+text both solar and both quiet on 910.525 SF7 BW62.5 CR5 at 22 dBm out of the box
+snap 102_compose_three_lines_counter
+# Enter sends. A channel message climbs QUEUED -> SENT -> heard-repeated as
+# the ticks land, so the ACK glyph progression is a capturable sequence.
+key enter
+snap 103_sent_queued
+tick 1
+snap 104_ack_sent
+tick 1
+snap 105_ack_heard_repeated

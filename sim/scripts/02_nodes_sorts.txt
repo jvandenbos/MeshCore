@@ -1,0 +1,15 @@
+# 's' cycles Recent -> Hops -> Direct(SNR) -> Distance -> Name.
+key 2
+expect nodes
+snap 20_sort_recent
+key s
+snap 21_sort_hops
+key s
+snap 22_sort_direct_snr
+key s
+snap 23_sort_distance
+key s
+snap 24_sort_name
+key s
+expect nodes
+snap 25_sort_wrapped_to_recent

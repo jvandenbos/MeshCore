@@ -1,0 +1,23 @@
+# The headline channel flow: n in Chats, type a #name, you are in. A hashtag
+# channel's key derives from its name, so there is nothing else to ask for.
+key 1
+key n
+expect newchat
+snap 110_newchat_picker
+text #cowichan
+snap 111_newchat_hashtag_ready
+key enter
+expect thread
+snap 112_joined_hashtag_thread
+# L, not "key 1": inside a conversation every printable key is the first
+# letter of a message, digits included.
+nav l
+expect chats
+# A channel with no traffic yet sorts last, so scroll to it.
+nav d
+nav d
+nav d
+nav d
+nav d
+nav d
+snap 113_chats_with_new_channel

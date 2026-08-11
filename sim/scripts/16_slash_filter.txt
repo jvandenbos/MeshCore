@@ -1,0 +1,15 @@
+# Rule 3 amendment: bare letters keep their verb meaning until a filter is
+# open, and '/' always opens one. Without it there is no way to filter a node
+# whose name starts with s, t, n, a, r or m.
+key 2
+expect nodes
+key s
+snap 160_bare_s_still_sorts
+key /
+snap 161_slash_opens_empty_filter
+text s
+snap 162_s_now_filters
+key bksp
+snap 163_empty_but_still_open
+key bksp
+snap 164_filter_closed

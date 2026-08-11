@@ -1,0 +1,6 @@
+# Boot: splash, then any keystroke drops into Chats (it's a messenger).
+start splash
+snap 00_splash
+key space
+expect chats
+snap 01_boot_chats

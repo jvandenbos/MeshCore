@@ -1,0 +1,26 @@
+# Joining a private channel by hand: 32 hex digits, grouped in fours, with a
+# live checksum so two people reading a key aloud find out they disagree.
+key 3
+nav d
+nav d
+nav click
+expect channels
+nav d
+nav d
+nav d
+snap 130_join_with_key_selected
+nav click
+snap 131_join_name_entry
+text salish-emcomm
+key enter
+snap 132_key_entry_empty
+text 8f210cd477a319be
+snap 133_key_mid_entry
+# A short key is a wrong key, not a partial one.
+key enter
+snap 134_key_too_short_rejected
+text 405ce2089a3361f7
+snap 135_key_complete_checksum
+key enter
+expect channels
+snap 136_channels_after_join

@@ -1,0 +1,33 @@
+# One continuous walk of the whole grammar: tab ring -> nodes -> sort ->
+# filter -> card -> back -> home, driven only by the trackball and verbs.
+start chats
+snap 80_walk_chats
+nav l
+expect home
+snap 81_walk_left_to_home
+nav r
+nav r
+expect nodes
+snap 82_walk_right_to_nodes
+key s
+snap 83_walk_sorted_hops
+text os
+snap 84_walk_filtered
+nav click
+expect node_card
+snap 85_walk_card
+nav d
+snap 86_walk_card_ping_focused
+nav l
+expect nodes
+snap 87_walk_back_to_nodes
+# Bksp edits the filter buffer; only once it is empty does it mean "back".
+key bksp
+key bksp
+snap 88_walk_filter_cleared
+key 0
+expect home
+snap 88b_walk_home
+nav d
+nav d
+snap 89_walk_home_bright_focused

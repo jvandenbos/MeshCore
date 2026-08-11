@@ -1,0 +1,8 @@
+# Toast sits UNDER the status bar (rule 4 wins) and never steals selection.
+key 2
+banner TALON|heading up the Tzouhalem|1
+snap 60_banner_over_nodes
+nav d
+snap 61_banner_list_still_live
+tick 5
+snap 62_banner_expired

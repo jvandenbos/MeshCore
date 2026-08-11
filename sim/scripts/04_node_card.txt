@@ -1,0 +1,29 @@
+# Node card: both hop numbers, SNR only when we heard the node directly.
+key 2
+nav d
+nav d
+nav d
+nav click
+expect node_card
+snap 40_card_gyrfalcon_direct
+nav l
+expect nodes
+nav d
+nav click
+snap 41_card_case_relayed
+nav l
+# Distance sort sinks the position-less node to the bottom, never hides it.
+key s
+key s
+key s
+nav d
+nav d
+nav d
+nav d
+nav d
+nav d
+nav d
+snap 42_nodes_distance_kestrel_selected
+nav click
+expect node_card
+snap 43_card_kestrel_no_position

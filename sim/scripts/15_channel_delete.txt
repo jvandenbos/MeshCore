@@ -1,0 +1,29 @@
+# Deleting a private channel destroys its key for good, so it costs a typed
+# confirmation AND the modal. #Public cannot be deleted at all.
+key 3
+nav d
+nav d
+nav click
+expect channels
+nav click
+expect channel
+snap 150_public_has_no_delete
+nav l
+expect channels
+nav d
+nav click
+expect channel
+snap 151_private_channel_detail
+nav d
+nav d
+snap 152_delete_row_selected
+nav click
+snap 153_type_the_name_to_confirm
+text #Salishnet
+snap 154_delete_armed
+key enter
+snap 155_delete_confirm_cancel_focused
+nav r
+snap 156_delete_confirm_delete_focused
+nav click
+snap 157_channel_deleted

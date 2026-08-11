@@ -1,0 +1,17 @@
+# Settings group list -> radio editor -> confirm-before-apply.
+key 3
+expect settings
+snap 70_settings
+nav d
+nav click
+expect radio
+snap 71_radio_editor
+key 7
+key 5
+snap 72_radio_unsaved
+nav click
+snap 73_radio_confirm_cancel_focused
+nav r
+snap 74_radio_confirm_apply_focused
+nav click
+snap 75_radio_applied

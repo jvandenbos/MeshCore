@@ -1,0 +1,376 @@
+<!doctype html><meta charset='utf-8'>
+<title>MERLIN UI - simulator goldens</title>
+<style>
+:root{--bg:#111;--card:#181818;--line:#2A2A2A;--fg:#CFCFCF;--acc:#35C8DC;--mut:#7E7E7E}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--fg);font:13px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;padding:28px 16px 80px}
+.page{max-width:1080px;margin:0 auto}
+h1{font-size:20px;color:#fff;letter-spacing:.04em}
+.sub{color:var(--mut);font-size:12px;margin-top:6px;max-width:70ch}
+h2{font-size:13px;letter-spacing:.09em;text-transform:uppercase;color:var(--acc);margin:30px 0 4px}
+.file{color:var(--mut);font-size:11px;font-family:ui-monospace,Menlo,monospace;margin-bottom:12px}
+.frame{display:flex;gap:18px;align-items:flex-start;background:var(--card);border:1px solid var(--line);padding:14px;margin-bottom:14px}
+.frame img{width:640px;height:480px;image-rendering:pixelated;background:#000;border:1px solid #333;flex:none}
+.meta{min-width:0;flex:1}
+.name{color:#fff;font-family:ui-monospace,Menlo,monospace;font-size:12px;margin-bottom:8px}
+pre{background:#0C0C0C;border:1px solid var(--line);padding:10px;overflow-x:auto;
+    font-family:ui-monospace,Menlo,monospace;font-size:11px;color:#B4B4B4;white-space:pre}
+pre b{color:var(--acc);font-weight:600}
+@media (max-width:1000px){.frame{flex-direction:column}.frame img{width:100%;height:auto}}
+</style>
+<div class='page'>
+<h1>MERLIN UI &mdash; simulator goldens</h1>
+<p class='sub'>Every frame is a real 320&times;240 RGB565 render from <code>ui-merlin/</code>, produced by replaying the input script shown beside it. Displayed at 2&times; with nearest-neighbour scaling, so what you see is the device pixel grid. These are the blessed frames in <code>sim/golden/</code>; <code>make check</code> re-renders them and compares byte-for-byte.</p>
+<h2>boot</h2>
+<div class='file'>sim/scripts/00_boot.txt</div>
+<div class='frame'><img src='golden/00_splash.png' alt='00_splash'><div class='meta'><div class='name'>00_splash.png</div><pre># Boot: splash, then any keystroke drops into Chats (it&#x27;s a messenger).
+start splash
+<b>snap 00_splash</b></pre></div></div>
+<div class='frame'><img src='golden/01_boot_chats.png' alt='01_boot_chats'><div class='meta'><div class='name'>01_boot_chats.png</div><pre>key space
+expect chats
+<b>snap 01_boot_chats</b></pre></div></div>
+<h2>tabs</h2>
+<div class='file'>sim/scripts/01_tabs.txt</div>
+<div class='frame'><img src='golden/10_tab_home.png' alt='10_tab_home'><div class='meta'><div class='name'>10_tab_home.png</div><pre># The tab ring, jumped to by number key (grammar rule 3).
+key 0
+expect home
+<b>snap 10_tab_home</b></pre></div></div>
+<div class='frame'><img src='golden/11_tab_chats.png' alt='11_tab_chats'><div class='meta'><div class='name'>11_tab_chats.png</div><pre>key 1
+expect chats
+<b>snap 11_tab_chats</b></pre></div></div>
+<div class='frame'><img src='golden/12_tab_nodes.png' alt='12_tab_nodes'><div class='meta'><div class='name'>12_tab_nodes.png</div><pre>key 2
+expect nodes
+<b>snap 12_tab_nodes</b></pre></div></div>
+<div class='frame'><img src='golden/13_tab_settings.png' alt='13_tab_settings'><div class='meta'><div class='name'>13_tab_settings.png</div><pre>key 3
+expect settings
+<b>snap 13_tab_settings</b></pre></div></div>
+<h2>nodes sorts</h2>
+<div class='file'>sim/scripts/02_nodes_sorts.txt</div>
+<div class='frame'><img src='golden/20_sort_recent.png' alt='20_sort_recent'><div class='meta'><div class='name'>20_sort_recent.png</div><pre># &#x27;s&#x27; cycles Recent -&gt; Hops -&gt; Direct(SNR) -&gt; Distance -&gt; Name.
+key 2
+expect nodes
+<b>snap 20_sort_recent</b></pre></div></div>
+<div class='frame'><img src='golden/21_sort_hops.png' alt='21_sort_hops'><div class='meta'><div class='name'>21_sort_hops.png</div><pre>key s
+<b>snap 21_sort_hops</b></pre></div></div>
+<div class='frame'><img src='golden/22_sort_direct_snr.png' alt='22_sort_direct_snr'><div class='meta'><div class='name'>22_sort_direct_snr.png</div><pre>key s
+<b>snap 22_sort_direct_snr</b></pre></div></div>
+<div class='frame'><img src='golden/23_sort_distance.png' alt='23_sort_distance'><div class='meta'><div class='name'>23_sort_distance.png</div><pre>key s
+<b>snap 23_sort_distance</b></pre></div></div>
+<div class='frame'><img src='golden/24_sort_name.png' alt='24_sort_name'><div class='meta'><div class='name'>24_sort_name.png</div><pre>key s
+<b>snap 24_sort_name</b></pre></div></div>
+<div class='frame'><img src='golden/25_sort_wrapped_to_recent.png' alt='25_sort_wrapped_to_recent'><div class='meta'><div class='name'>25_sort_wrapped_to_recent.png</div><pre>key s
+expect nodes
+<b>snap 25_sort_wrapped_to_recent</b></pre></div></div>
+<h2>nodes filter</h2>
+<div class='file'>sim/scripts/03_nodes_filter.txt</div>
+<div class='frame'><img src='golden/30_filter_gyr.png' alt='30_filter_gyr'><div class='meta'><div class='name'>30_filter_gyr.png</div><pre># Type-to-filter HIDES non-matches and reports the count (locked ruling).
+key 2
+text gyr
+<b>snap 30_filter_gyr</b></pre></div></div>
+<div class='frame'><img src='golden/31_filter_g.png' alt='31_filter_g'><div class='meta'><div class='name'>31_filter_g.png</div><pre>key bksp
+key bksp
+<b>snap 31_filter_g</b></pre></div></div>
+<div class='frame'><img src='golden/32_filter_cleared.png' alt='32_filter_cleared'><div class='meta'><div class='name'>32_filter_cleared.png</div><pre>key bksp
+<b>snap 32_filter_cleared</b></pre></div></div>
+<div class='frame'><img src='golden/33_repeaters_only.png' alt='33_repeaters_only'><div class='meta'><div class='name'>33_repeaters_only.png</div><pre># &#x27;t&#x27; is the repeaters-only toggle, orthogonal to sort.
+key t
+<b>snap 33_repeaters_only</b></pre></div></div>
+<div class='frame'><img src='golden/34_repeaters_off.png' alt='34_repeaters_off'><div class='meta'><div class='name'>34_repeaters_off.png</div><pre>key t
+<b>snap 34_repeaters_off</b></pre></div></div>
+<h2>node card</h2>
+<div class='file'>sim/scripts/04_node_card.txt</div>
+<div class='frame'><img src='golden/40_card_gyrfalcon_direct.png' alt='40_card_gyrfalcon_direct'><div class='meta'><div class='name'>40_card_gyrfalcon_direct.png</div><pre># Node card: both hop numbers, SNR only when we heard the node directly.
+key 2
+nav d
+nav d
+nav d
+nav click
+expect node_card
+<b>snap 40_card_gyrfalcon_direct</b></pre></div></div>
+<div class='frame'><img src='golden/41_card_case_relayed.png' alt='41_card_case_relayed'><div class='meta'><div class='name'>41_card_case_relayed.png</div><pre>nav l
+expect nodes
+nav d
+nav click
+<b>snap 41_card_case_relayed</b></pre></div></div>
+<div class='frame'><img src='golden/42_nodes_distance_kestrel_selected.png' alt='42_nodes_distance_kestrel_selected'><div class='meta'><div class='name'>42_nodes_distance_kestrel_selected.png</div><pre>nav l
+# Distance sort sinks the position-less node to the bottom, never hides it.
+key s
+key s
+key s
+nav d
+nav d
+nav d
+nav d
+nav d
+nav d
+nav d
+<b>snap 42_nodes_distance_kestrel_selected</b></pre></div></div>
+<div class='frame'><img src='golden/43_card_kestrel_no_position.png' alt='43_card_kestrel_no_position'><div class='meta'><div class='name'>43_card_kestrel_no_position.png</div><pre>nav click
+expect node_card
+<b>snap 43_card_kestrel_no_position</b></pre></div></div>
+<h2>thread</h2>
+<div class='file'>sim/scripts/05_thread.txt</div>
+<div class='frame'><img src='golden/50_thread_public.png' alt='50_thread_public'><div class='meta'><div class='name'>50_thread_public.png</div><pre># Chats -&gt; thread. All five ACK glyphs and the UTF-8 collapse are on screen.
+key 1
+nav click
+expect thread
+<b>snap 50_thread_public</b></pre></div></div>
+<div class='frame'><img src='golden/52_chats_after_read.png' alt='52_chats_after_read'><div class='meta'><div class='name'>52_chats_after_read.png</div><pre># Opening a conversation clears its unread count, so on the way back #Public
+# has dropped below TALON: unread-first is a sort key, not a decoration.
+nav l
+expect chats
+<b>snap 52_chats_after_read</b></pre></div></div>
+<div class='frame'><img src='golden/51_thread_dm_talon.png' alt='51_thread_dm_talon'><div class='meta'><div class='name'>51_thread_dm_talon.png</div><pre>nav click
+expect thread
+<b>snap 51_thread_dm_talon</b></pre></div></div>
+<h2>banner</h2>
+<div class='file'>sim/scripts/06_banner.txt</div>
+<div class='frame'><img src='golden/60_banner_over_nodes.png' alt='60_banner_over_nodes'><div class='meta'><div class='name'>60_banner_over_nodes.png</div><pre># Toast sits UNDER the status bar (rule 4 wins) and never steals selection.
+key 2
+banner TALON|heading up the Tzouhalem|1
+<b>snap 60_banner_over_nodes</b></pre></div></div>
+<div class='frame'><img src='golden/61_banner_list_still_live.png' alt='61_banner_list_still_live'><div class='meta'><div class='name'>61_banner_list_still_live.png</div><pre>nav d
+<b>snap 61_banner_list_still_live</b></pre></div></div>
+<div class='frame'><img src='golden/62_banner_expired.png' alt='62_banner_expired'><div class='meta'><div class='name'>62_banner_expired.png</div><pre>tick 5
+<b>snap 62_banner_expired</b></pre></div></div>
+<h2>settings radio</h2>
+<div class='file'>sim/scripts/07_settings_radio.txt</div>
+<div class='frame'><img src='golden/70_settings.png' alt='70_settings'><div class='meta'><div class='name'>70_settings.png</div><pre># Settings group list -&gt; radio editor -&gt; confirm-before-apply.
+key 3
+expect settings
+<b>snap 70_settings</b></pre></div></div>
+<div class='frame'><img src='golden/71_radio_editor.png' alt='71_radio_editor'><div class='meta'><div class='name'>71_radio_editor.png</div><pre>nav d
+nav click
+expect radio
+<b>snap 71_radio_editor</b></pre></div></div>
+<div class='frame'><img src='golden/72_radio_unsaved.png' alt='72_radio_unsaved'><div class='meta'><div class='name'>72_radio_unsaved.png</div><pre>key 7
+key 5
+<b>snap 72_radio_unsaved</b></pre></div></div>
+<div class='frame'><img src='golden/73_radio_confirm_cancel_focused.png' alt='73_radio_confirm_cancel_focused'><div class='meta'><div class='name'>73_radio_confirm_cancel_focused.png</div><pre>nav click
+<b>snap 73_radio_confirm_cancel_focused</b></pre></div></div>
+<div class='frame'><img src='golden/74_radio_confirm_apply_focused.png' alt='74_radio_confirm_apply_focused'><div class='meta'><div class='name'>74_radio_confirm_apply_focused.png</div><pre>nav r
+<b>snap 74_radio_confirm_apply_focused</b></pre></div></div>
+<div class='frame'><img src='golden/75_radio_applied.png' alt='75_radio_applied'><div class='meta'><div class='name'>75_radio_applied.png</div><pre>nav click
+<b>snap 75_radio_applied</b></pre></div></div>
+<h2>grammar walk</h2>
+<div class='file'>sim/scripts/08_grammar_walk.txt</div>
+<div class='frame'><img src='golden/80_walk_chats.png' alt='80_walk_chats'><div class='meta'><div class='name'>80_walk_chats.png</div><pre># One continuous walk of the whole grammar: tab ring -&gt; nodes -&gt; sort -&gt;
+# filter -&gt; card -&gt; back -&gt; home, driven only by the trackball and verbs.
+start chats
+<b>snap 80_walk_chats</b></pre></div></div>
+<div class='frame'><img src='golden/81_walk_left_to_home.png' alt='81_walk_left_to_home'><div class='meta'><div class='name'>81_walk_left_to_home.png</div><pre>nav l
+expect home
+<b>snap 81_walk_left_to_home</b></pre></div></div>
+<div class='frame'><img src='golden/82_walk_right_to_nodes.png' alt='82_walk_right_to_nodes'><div class='meta'><div class='name'>82_walk_right_to_nodes.png</div><pre>nav r
+nav r
+expect nodes
+<b>snap 82_walk_right_to_nodes</b></pre></div></div>
+<div class='frame'><img src='golden/83_walk_sorted_hops.png' alt='83_walk_sorted_hops'><div class='meta'><div class='name'>83_walk_sorted_hops.png</div><pre>key s
+<b>snap 83_walk_sorted_hops</b></pre></div></div>
+<div class='frame'><img src='golden/84_walk_filtered.png' alt='84_walk_filtered'><div class='meta'><div class='name'>84_walk_filtered.png</div><pre>text os
+<b>snap 84_walk_filtered</b></pre></div></div>
+<div class='frame'><img src='golden/85_walk_card.png' alt='85_walk_card'><div class='meta'><div class='name'>85_walk_card.png</div><pre>nav click
+expect node_card
+<b>snap 85_walk_card</b></pre></div></div>
+<div class='frame'><img src='golden/86_walk_card_ping_focused.png' alt='86_walk_card_ping_focused'><div class='meta'><div class='name'>86_walk_card_ping_focused.png</div><pre>nav d
+<b>snap 86_walk_card_ping_focused</b></pre></div></div>
+<div class='frame'><img src='golden/87_walk_back_to_nodes.png' alt='87_walk_back_to_nodes'><div class='meta'><div class='name'>87_walk_back_to_nodes.png</div><pre>nav l
+expect nodes
+<b>snap 87_walk_back_to_nodes</b></pre></div></div>
+<div class='frame'><img src='golden/88_walk_filter_cleared.png' alt='88_walk_filter_cleared'><div class='meta'><div class='name'>88_walk_filter_cleared.png</div><pre># Bksp edits the filter buffer; only once it is empty does it mean &quot;back&quot;.
+key bksp
+key bksp
+<b>snap 88_walk_filter_cleared</b></pre></div></div>
+<div class='frame'><img src='golden/88b_walk_home.png' alt='88b_walk_home'><div class='meta'><div class='name'>88b_walk_home.png</div><pre>key 0
+expect home
+<b>snap 88b_walk_home</b></pre></div></div>
+<div class='frame'><img src='golden/89_walk_home_bright_focused.png' alt='89_walk_home_bright_focused'><div class='meta'><div class='name'>89_walk_home_bright_focused.png</div><pre>nav d
+nav d
+<b>snap 89_walk_home_bright_focused</b></pre></div></div>
+<h2>touch</h2>
+<div class='file'>sim/scripts/09_touch.txt</div>
+<div class='frame'><img src='golden/90_touch_selects_row.png' alt='90_touch_selects_row'><div class='meta'><div class='name'>90_touch_selects_row.png</div><pre># Touch is an alias of the same grammar, never a second one.
+key 2
+touch 160,110
+<b>snap 90_touch_selects_row</b></pre></div></div>
+<div class='frame'><img src='golden/91_touch_opens_card.png' alt='91_touch_opens_card'><div class='meta'><div class='name'>91_touch_opens_card.png</div><pre>touch 160,110
+expect node_card
+<b>snap 91_touch_opens_card</b></pre></div></div>
+<div class='frame'><img src='golden/92_touch_tab_bar.png' alt='92_touch_tab_bar'><div class='meta'><div class='name'>92_touch_tab_bar.png</div><pre>swipe r
+expect nodes
+touch 250,233
+expect settings
+<b>snap 92_touch_tab_bar</b></pre></div></div>
+<h2>compose</h2>
+<div class='file'>sim/scripts/10_compose.txt</div>
+<div class='frame'><img src='golden/100_compose_one_line.png' alt='100_compose_one_line'><div class='meta'><div class='name'>100_compose_one_line.png</div><pre># The BlackBerry rule: inside a conversation, just start typing. The composer
+# grows a line at a time to three, the tab bar stands down, and the status bar
+# keeps burning.
+key 1
+nav click
+expect thread
+text hello from the T-Deck
+<b>snap 100_compose_one_line</b></pre></div></div>
+<div class='frame'><img src='golden/101_compose_two_lines.png' alt='101_compose_two_lines'><div class='meta'><div class='name'>101_compose_two_lines.png</div><pre>key space
+text OSPREY on the roof peak, GYRFALCON on Tzouhalem
+<b>snap 101_compose_two_lines</b></pre></div></div>
+<div class='frame'><img src='golden/102_compose_three_lines_counter.png' alt='102_compose_three_lines_counter'><div class='meta'><div class='name'>102_compose_three_lines_counter.png</div><pre>key space
+text both solar and both quiet on 910.525 SF7 BW62.5 CR5 at 22 dBm out of the box
+<b>snap 102_compose_three_lines_counter</b></pre></div></div>
+<div class='frame'><img src='golden/103_sent_queued.png' alt='103_sent_queued'><div class='meta'><div class='name'>103_sent_queued.png</div><pre># Enter sends. A channel message climbs QUEUED -&gt; SENT -&gt; heard-repeated as
+# the ticks land, so the ACK glyph progression is a capturable sequence.
+key enter
+<b>snap 103_sent_queued</b></pre></div></div>
+<div class='frame'><img src='golden/104_ack_sent.png' alt='104_ack_sent'><div class='meta'><div class='name'>104_ack_sent.png</div><pre>tick 1
+<b>snap 104_ack_sent</b></pre></div></div>
+<div class='frame'><img src='golden/105_ack_heard_repeated.png' alt='105_ack_heard_repeated'><div class='meta'><div class='name'>105_ack_heard_repeated.png</div><pre>tick 1
+<b>snap 105_ack_heard_repeated</b></pre></div></div>
+<h2>join hashtag</h2>
+<div class='file'>sim/scripts/11_join_hashtag.txt</div>
+<div class='frame'><img src='golden/110_newchat_picker.png' alt='110_newchat_picker'><div class='meta'><div class='name'>110_newchat_picker.png</div><pre># The headline channel flow: n in Chats, type a #name, you are in. A hashtag
+# channel&#x27;s key derives from its name, so there is nothing else to ask for.
+key 1
+key n
+expect newchat
+<b>snap 110_newchat_picker</b></pre></div></div>
+<div class='frame'><img src='golden/111_newchat_hashtag_ready.png' alt='111_newchat_hashtag_ready'><div class='meta'><div class='name'>111_newchat_hashtag_ready.png</div><pre>text #cowichan
+<b>snap 111_newchat_hashtag_ready</b></pre></div></div>
+<div class='frame'><img src='golden/112_joined_hashtag_thread.png' alt='112_joined_hashtag_thread'><div class='meta'><div class='name'>112_joined_hashtag_thread.png</div><pre>key enter
+expect thread
+<b>snap 112_joined_hashtag_thread</b></pre></div></div>
+<div class='frame'><img src='golden/113_chats_with_new_channel.png' alt='113_chats_with_new_channel'><div class='meta'><div class='name'>113_chats_with_new_channel.png</div><pre># L, not &quot;key 1&quot;: inside a conversation every printable key is the first
+# letter of a message, digits included.
+nav l
+expect chats
+# A channel with no traffic yet sorts last, so scroll to it.
+nav d
+nav d
+nav d
+nav d
+nav d
+nav d
+<b>snap 113_chats_with_new_channel</b></pre></div></div>
+<h2>channel create share</h2>
+<div class='file'>sim/scripts/12_channel_create_share.txt</div>
+<div class='frame'><img src='golden/120_channels_list.png' alt='120_channels_list'><div class='meta'><div class='name'>120_channels_list.png</div><pre># Create a private channel and get it into someone else&#x27;s radio. A private
+# channel nobody else holds the key to is useless, so creating one lands
+# straight on Share.
+key 3
+expect settings
+nav d
+nav d
+nav click
+expect channels
+<b>snap 120_channels_list</b></pre></div></div>
+<div class='frame'><img src='golden/121_create_row_selected.png' alt='121_create_row_selected'><div class='meta'><div class='name'>121_create_row_selected.png</div><pre>nav d
+nav d
+<b>snap 121_create_row_selected</b></pre></div></div>
+<div class='frame'><img src='golden/122_channel_name_entry.png' alt='122_channel_name_entry'><div class='meta'><div class='name'>122_channel_name_entry.png</div><pre>nav click
+<b>snap 122_channel_name_entry</b></pre></div></div>
+<div class='frame'><img src='golden/123_channel_name_typed.png' alt='123_channel_name_typed'><div class='meta'><div class='name'>123_channel_name_typed.png</div><pre>text cowichan-ops
+<b>snap 123_channel_name_typed</b></pre></div></div>
+<div class='frame'><img src='golden/124_created_lands_on_share.png' alt='124_created_lands_on_share'><div class='meta'><div class='name'>124_created_lands_on_share.png</div><pre>key enter
+expect channel
+<b>snap 124_created_lands_on_share</b></pre></div></div>
+<div class='frame'><img src='golden/125_share_pick_contact.png' alt='125_share_pick_contact'><div class='meta'><div class='name'>125_share_pick_contact.png</div><pre>nav d
+<b>snap 125_share_pick_contact</b></pre></div></div>
+<div class='frame'><img src='golden/126_detail_invite_sent.png' alt='126_detail_invite_sent'><div class='meta'><div class='name'>126_detail_invite_sent.png</div><pre>nav click
+<b>snap 126_detail_invite_sent</b></pre></div></div>
+<div class='frame'><img src='golden/127_key_revealed.png' alt='127_key_revealed'><div class='meta'><div class='name'>127_key_revealed.png</div><pre># The key stays hidden until it is asked for (guardrail).
+nav click
+<b>snap 127_key_revealed</b></pre></div></div>
+<h2>channel join key</h2>
+<div class='file'>sim/scripts/13_channel_join_key.txt</div>
+<div class='frame'><img src='golden/130_join_with_key_selected.png' alt='130_join_with_key_selected'><div class='meta'><div class='name'>130_join_with_key_selected.png</div><pre># Joining a private channel by hand: 32 hex digits, grouped in fours, with a
+# live checksum so two people reading a key aloud find out they disagree.
+key 3
+nav d
+nav d
+nav click
+expect channels
+nav d
+nav d
+nav d
+<b>snap 130_join_with_key_selected</b></pre></div></div>
+<div class='frame'><img src='golden/131_join_name_entry.png' alt='131_join_name_entry'><div class='meta'><div class='name'>131_join_name_entry.png</div><pre>nav click
+<b>snap 131_join_name_entry</b></pre></div></div>
+<div class='frame'><img src='golden/132_key_entry_empty.png' alt='132_key_entry_empty'><div class='meta'><div class='name'>132_key_entry_empty.png</div><pre>text salish-emcomm
+key enter
+<b>snap 132_key_entry_empty</b></pre></div></div>
+<div class='frame'><img src='golden/133_key_mid_entry.png' alt='133_key_mid_entry'><div class='meta'><div class='name'>133_key_mid_entry.png</div><pre>text 8f210cd477a319be
+<b>snap 133_key_mid_entry</b></pre></div></div>
+<div class='frame'><img src='golden/134_key_too_short_rejected.png' alt='134_key_too_short_rejected'><div class='meta'><div class='name'>134_key_too_short_rejected.png</div><pre># A short key is a wrong key, not a partial one.
+key enter
+<b>snap 134_key_too_short_rejected</b></pre></div></div>
+<div class='frame'><img src='golden/135_key_complete_checksum.png' alt='135_key_complete_checksum'><div class='meta'><div class='name'>135_key_complete_checksum.png</div><pre>text 405ce2089a3361f7
+<b>snap 135_key_complete_checksum</b></pre></div></div>
+<div class='frame'><img src='golden/136_channels_after_join.png' alt='136_channels_after_join'><div class='meta'><div class='name'>136_channels_after_join.png</div><pre>key enter
+expect channels
+<b>snap 136_channels_after_join</b></pre></div></div>
+<h2>invite received</h2>
+<div class='file'>sim/scripts/14_invite_received.txt</div>
+<div class='frame'><img src='golden/140_chats_invite_arrived.png' alt='140_chats_invite_arrived'><div class='meta'><div class='name'>140_chats_invite_arrived.png</div><pre># The receiving side. An invite arriving as a DM is rendered as an action row,
+# never as a raw join string for the user to retype.
+rx TALON|TALON|meshcore://join/#cowichan-ops/7c1e9a4b33d08f62b5470ae1cd29f8a4
+key 1
+expect chats
+<b>snap 140_chats_invite_arrived</b></pre></div></div>
+<div class='frame'><img src='golden/141_thread_join_action_row.png' alt='141_thread_join_action_row'><div class='meta'><div class='name'>141_thread_join_action_row.png</div><pre>nav d
+nav click
+expect thread
+<b>snap 141_thread_join_action_row</b></pre></div></div>
+<div class='frame'><img src='golden/142_invite_accepted.png' alt='142_invite_accepted'><div class='meta'><div class='name'>142_invite_accepted.png</div><pre>key enter
+<b>snap 142_invite_accepted</b></pre></div></div>
+<div class='frame'><img src='golden/143_chats_invite_summarised.png' alt='143_chats_invite_summarised'><div class='meta'><div class='name'>143_chats_invite_summarised.png</div><pre>nav l
+expect chats
+# Even the Chats snippet summarises the invite instead of showing the URL.
+<b>snap 143_chats_invite_summarised</b></pre></div></div>
+<h2>channel delete</h2>
+<div class='file'>sim/scripts/15_channel_delete.txt</div>
+<div class='frame'><img src='golden/150_public_has_no_delete.png' alt='150_public_has_no_delete'><div class='meta'><div class='name'>150_public_has_no_delete.png</div><pre># Deleting a private channel destroys its key for good, so it costs a typed
+# confirmation AND the modal. #Public cannot be deleted at all.
+key 3
+nav d
+nav d
+nav click
+expect channels
+nav click
+expect channel
+<b>snap 150_public_has_no_delete</b></pre></div></div>
+<div class='frame'><img src='golden/151_private_channel_detail.png' alt='151_private_channel_detail'><div class='meta'><div class='name'>151_private_channel_detail.png</div><pre>nav l
+expect channels
+nav d
+nav click
+expect channel
+<b>snap 151_private_channel_detail</b></pre></div></div>
+<div class='frame'><img src='golden/152_delete_row_selected.png' alt='152_delete_row_selected'><div class='meta'><div class='name'>152_delete_row_selected.png</div><pre>nav d
+nav d
+<b>snap 152_delete_row_selected</b></pre></div></div>
+<div class='frame'><img src='golden/153_type_the_name_to_confirm.png' alt='153_type_the_name_to_confirm'><div class='meta'><div class='name'>153_type_the_name_to_confirm.png</div><pre>nav click
+<b>snap 153_type_the_name_to_confirm</b></pre></div></div>
+<div class='frame'><img src='golden/154_delete_armed.png' alt='154_delete_armed'><div class='meta'><div class='name'>154_delete_armed.png</div><pre>text #Salishnet
+<b>snap 154_delete_armed</b></pre></div></div>
+<div class='frame'><img src='golden/155_delete_confirm_cancel_focused.png' alt='155_delete_confirm_cancel_focused'><div class='meta'><div class='name'>155_delete_confirm_cancel_focused.png</div><pre>key enter
+<b>snap 155_delete_confirm_cancel_focused</b></pre></div></div>
+<div class='frame'><img src='golden/156_delete_confirm_delete_focused.png' alt='156_delete_confirm_delete_focused'><div class='meta'><div class='name'>156_delete_confirm_delete_focused.png</div><pre>nav r
+<b>snap 156_delete_confirm_delete_focused</b></pre></div></div>
+<div class='frame'><img src='golden/157_channel_deleted.png' alt='157_channel_deleted'><div class='meta'><div class='name'>157_channel_deleted.png</div><pre>nav click
+<b>snap 157_channel_deleted</b></pre></div></div>
+<h2>slash filter</h2>
+<div class='file'>sim/scripts/16_slash_filter.txt</div>
+<div class='frame'><img src='golden/160_bare_s_still_sorts.png' alt='160_bare_s_still_sorts'><div class='meta'><div class='name'>160_bare_s_still_sorts.png</div><pre># Rule 3 amendment: bare letters keep their verb meaning until a filter is
+# open, and &#x27;/&#x27; always opens one. Without it there is no way to filter a node
+# whose name starts with s, t, n, a, r or m.
+key 2
+expect nodes
+key s
+<b>snap 160_bare_s_still_sorts</b></pre></div></div>
+<div class='frame'><img src='golden/161_slash_opens_empty_filter.png' alt='161_slash_opens_empty_filter'><div class='meta'><div class='name'>161_slash_opens_empty_filter.png</div><pre>key /
+<b>snap 161_slash_opens_empty_filter</b></pre></div></div>
+<div class='frame'><img src='golden/162_s_now_filters.png' alt='162_s_now_filters'><div class='meta'><div class='name'>162_s_now_filters.png</div><pre>text s
+<b>snap 162_s_now_filters</b></pre></div></div>
+<div class='frame'><img src='golden/163_empty_but_still_open.png' alt='163_empty_but_still_open'><div class='meta'><div class='name'>163_empty_but_still_open.png</div><pre>key bksp
+<b>snap 163_empty_but_still_open</b></pre></div></div>
+<div class='frame'><img src='golden/164_filter_closed.png' alt='164_filter_closed'><div class='meta'><div class='name'>164_filter_closed.png</div><pre>key bksp
+<b>snap 164_filter_closed</b></pre></div></div>
+</div>

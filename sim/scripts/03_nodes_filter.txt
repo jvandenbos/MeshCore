@@ -1,0 +1,14 @@
+# Type-to-filter HIDES non-matches and reports the count (locked ruling).
+key 2
+text gyr
+snap 30_filter_gyr
+key bksp
+key bksp
+snap 31_filter_g
+key bksp
+snap 32_filter_cleared
+# 't' is the repeaters-only toggle, orthogonal to sort.
+key t
+snap 33_repeaters_only
+key t
+snap 34_repeaters_off

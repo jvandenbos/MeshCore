@@ -1,0 +1,13 @@
+# Chats -> thread. All five ACK glyphs and the UTF-8 collapse are on screen.
+key 1
+nav click
+expect thread
+snap 50_thread_public
+# Opening a conversation clears its unread count, so on the way back #Public
+# has dropped below TALON: unread-first is a sort key, not a decoration.
+nav l
+expect chats
+snap 52_chats_after_read
+nav click
+expect thread
+snap 51_thread_dm_talon

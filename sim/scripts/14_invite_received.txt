@@ -1,0 +1,16 @@
+# The receiving side. An invite arriving as a DM is rendered as an action row,
+# never as a raw join string for the user to retype.
+rx TALON|TALON|meshcore://join/#cowichan-ops/7c1e9a4b33d08f62b5470ae1cd29f8a4
+key 1
+expect chats
+snap 140_chats_invite_arrived
+nav d
+nav click
+expect thread
+snap 141_thread_join_action_row
+key enter
+snap 142_invite_accepted
+nav l
+expect chats
+# Even the Chats snippet summarises the invite instead of showing the URL.
+snap 143_chats_invite_summarised

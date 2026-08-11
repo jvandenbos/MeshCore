@@ -1,0 +1,27 @@
+# Create a private channel and get it into someone else's radio. A private
+# channel nobody else holds the key to is useless, so creating one lands
+# straight on Share.
+key 3
+expect settings
+nav d
+nav d
+nav click
+expect channels
+snap 120_channels_list
+nav d
+nav d
+snap 121_create_row_selected
+nav click
+snap 122_channel_name_entry
+text cowichan-ops
+snap 123_channel_name_typed
+key enter
+expect channel
+snap 124_created_lands_on_share
+nav d
+snap 125_share_pick_contact
+nav click
+snap 126_detail_invite_sent
+# The key stays hidden until it is asked for (guardrail).
+nav click
+snap 127_key_revealed
