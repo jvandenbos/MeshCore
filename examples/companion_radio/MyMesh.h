@@ -81,6 +81,7 @@ struct AdvertPath {
   uint8_t path_len;
   char    name[32];
   uint32_t recv_timestamp;
+  int8_t  snr_x4;    // signal of the advert itself; only meaningful at path_len 0
   uint8_t path[MAX_PATH_SIZE];
 };
 
@@ -101,6 +102,12 @@ public:
   void enterCLIRescue();
 
   int  getRecentlyHeard(AdvertPath dest[], int max_num);
+
+  // Register an ACK we are waiting for. Anything that calls sendMessage()
+  // directly -- the phone protocol, or an on-device UI -- has to record the
+  // expected hash here, or onAckRecv() has nothing to match the reply against
+  // and the send never resolves.
+  void trackExpectedAck(uint32_t expected_ack, ContactInfo* recipient);
 
 protected:
   float getAirtimeBudgetFactor() const override;
@@ -124,6 +131,7 @@ protected:
   void onContactsFull() override;
   void onContactOverwrite(const uint8_t* pub_key) override;
   bool onContactPathRecv(ContactInfo& from, uint8_t* in_path, uint8_t in_path_len, uint8_t* out_path, uint8_t out_path_len, uint8_t extra_type, uint8_t* extra, uint8_t extra_len) override;
+  void onAdvertRecv(mesh::Packet* packet, const mesh::Identity& id, uint32_t timestamp, const uint8_t* app_data, size_t app_data_len) override;
   void onDiscoveredContact(ContactInfo &contact, bool is_new, uint8_t path_len, const uint8_t* path) override;
   void onContactPathUpdated(const ContactInfo &contact) override;
   ContactInfo* processAck(const uint8_t *data) override;
@@ -165,6 +173,9 @@ protected:
 
 public:
   void savePrefs() { _store->savePrefs(_prefs, sensors.node_lat, sensors.node_lon); }
+  // Public because an on-device UI edits channels; the phone protocol is no
+  // longer the only thing that can change them.
+  void saveChannels() { _store->saveChannels(this); }
 
 #if ENV_INCLUDE_GPS == 1
   void applyGpsPrefs() {
@@ -200,7 +211,6 @@ private:
   bool isValidClientRepeatFreq(uint32_t f) const;
 
   // helpers, short-cuts
-  void saveChannels() { _store->saveChannels(this); }
   void saveContacts();
 
   DataStore* _store;
@@ -221,6 +231,7 @@ private:
   bool send_unscoped;   // force un-scoped flood (instead of using send_scope)
   char cli_command[80];
   uint8_t app_target_ver;
+  int8_t _advert_snr_x4;  // SNR of the advert being processed, for the path cache
   uint8_t *sign_data;
   uint32_t sign_data_len;
   unsigned long dirty_contacts_expiry;

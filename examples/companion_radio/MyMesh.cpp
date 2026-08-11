@@ -347,6 +347,15 @@ void MyMesh::onContactsFull() {
   }
 }
 
+void MyMesh::onAdvertRecv(mesh::Packet* packet, const mesh::Identity& id, uint32_t timestamp, const uint8_t* app_data, size_t app_data_len) {
+  // onDiscoveredContact() is called synchronously from inside the base
+  // implementation but is not given the packet, so the signal has to be parked
+  // here for the path cache to pick up. ContactInfo itself carries no SNR.
+  _advert_snr_x4 = (int8_t)(packet->getSNR() * 4);
+  BaseChatMesh::onAdvertRecv(packet, id, timestamp, app_data, app_data_len);
+  _advert_snr_x4 = 0;
+}
+
 void MyMesh::onDiscoveredContact(ContactInfo &contact, bool is_new, uint8_t path_len, const uint8_t* path) {
   if (_serial->isConnected()) {
     if (is_new) {
@@ -380,6 +389,7 @@ void MyMesh::onDiscoveredContact(ContactInfo &contact, bool is_new, uint8_t path
     memcpy(p->pubkey_prefix, contact.id.pub_key, sizeof(p->pubkey_prefix));
     strcpy(p->name, contact.name);
     p->recv_timestamp = getRTCClock()->getCurrentTime();
+    p->snr_x4 = _advert_snr_x4;
     p->path_len = mesh::Packet::copyPath(p->path, path, path_len);
   }
 
@@ -408,6 +418,14 @@ void MyMesh::onContactPathUpdated(const ContactInfo &contact) {
   dirty_contacts_expiry = futureMillis(LAZY_CONTACTS_WRITE_DELAY);
 }
 
+void MyMesh::trackExpectedAck(uint32_t expected_ack, ContactInfo* recipient) {
+  if (expected_ack == 0) return;  // nothing to wait for (eg. CLI data)
+  expected_ack_table[next_ack_idx].msg_sent = _ms->getMillis(); // circular table
+  expected_ack_table[next_ack_idx].ack = expected_ack;
+  expected_ack_table[next_ack_idx].contact = recipient;
+  next_ack_idx = (next_ack_idx + 1) % EXPECTED_ACK_TABLE_SIZE;
+}
+
 ContactInfo*  MyMesh::processAck(const uint8_t *data) {
   // see if matches any in a table
   for (int i = 0; i < EXPECTED_ACK_TABLE_SIZE; i++) {
@@ -419,7 +437,9 @@ ContactInfo*  MyMesh::processAck(const uint8_t *data) {
       _serial->writeFrame(out_frame, 9);
 
       // NOTE: the same ACK can be received multiple times!
+      uint32_t acked = expected_ack_table[i].ack;
       expected_ack_table[i].ack = 0; // clear expected hash, now that we have received ACK
+      if (_ui) _ui->ackRecv(acked);  // tell an on-device UI which msg landed
       return expected_ack_table[i].contact;
     }
   }
@@ -859,6 +879,7 @@ MyMesh::MyMesh(mesh::Radio &radio, mesh::RNG &rng, mesh::RTCClock &rtc, SimpleMe
   _cli_rescue = false;
   offline_queue_len = 0;
   app_target_ver = 0;
+  _advert_snr_x4 = 0;
   clearPendingReqs();
   next_ack_idx = 0;
   sign_data = NULL;
@@ -1096,12 +1117,7 @@ void MyMesh::handleCmdFrame(size_t len) {
       if (result == MSG_SEND_FAILED) {
         writeErrFrame(ERR_CODE_TABLE_FULL);
       } else {
-        if (expected_ack) {
-          expected_ack_table[next_ack_idx].msg_sent = _ms->getMillis(); // add to circular table
-          expected_ack_table[next_ack_idx].ack = expected_ack;
-          expected_ack_table[next_ack_idx].contact = recipient;
-          next_ack_idx = (next_ack_idx + 1) % EXPECTED_ACK_TABLE_SIZE;
-        }
+        trackExpectedAck(expected_ack, recipient);
 
         out_frame[0] = RESP_CODE_SENT;
         out_frame[1] = (result == MSG_SEND_SENT_FLOOD) ? 1 : 0;

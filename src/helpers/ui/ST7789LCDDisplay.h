@@ -43,6 +43,13 @@ public:
 #endif
   bool begin();
 
+#ifdef UI_MERLIN
+  // The MERLIN UI renders into its own PSRAM canvas and blits it whole, so it
+  // needs the panel this driver already initialised rather than a second
+  // Adafruit_ST7789 fighting it for the SPI bus.
+  Adafruit_ST7789* getPanel() { return &display; }
+#endif
+
   bool isOn() override { return _isOn; }
   void turnOn() override;
   void turnOff() override;
